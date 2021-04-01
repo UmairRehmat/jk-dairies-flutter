@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jkdairies/utils/constants.dart';
+import 'package:intl/intl.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   @override
@@ -7,6 +8,13 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  int deliverySchedule = 0;
+  String currentTime = '';
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,10 +132,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: SelectionItem(
-                      text: "10:00AM",
-                      icon: Icons.watch_later,
-                      isSelected: true,
+                    child: InkWell(
+                      onTap: () {
+                        showTimeDialog();
+                      },
+                      child: SelectionItem(
+                        text: currentTime.length == 0 ? "10:00AM" : currentTime,
+                        icon: Icons.watch_later,
+                        isSelected: currentTime.length == 0 ? false : true,
+                      ),
                     ),
                   ),
                   divider(),
@@ -138,6 +151,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   SizedBox(
                     height: 15,
                   ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          onScheduleSelection(0);
+                        },
+                        child: SelectionItem(
+                          text: "One Time",
+                          isSelected: deliverySchedule == 0 ? true : false,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          onScheduleSelection(1);
+                        },
+                        child: SelectionItem(
+                          text: "Week",
+                          isSelected: deliverySchedule == 1 ? true : false,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          onScheduleSelection(2);
+                        },
+                        child: SelectionItem(
+                          text: "Month",
+                          isSelected: deliverySchedule == 2 ? true : false,
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -146,6 +196,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
+
+  void onScheduleSelection(int i) {
+    setState(() {
+      deliverySchedule = i;
+    });
+  }
+
+  void showTimeDialog() async {
+    TimeOfDay selectedTime = await showTimePicker(
+      initialTime: TimeOfDay(hour: 10, minute: 00),
+      context: context,
+    );
+    print("time here");
+    setState(() {
+      currentTime = formatTimeOfDay(selectedTime);
+    });
+  }
+}
+
+String formatTimeOfDay(TimeOfDay tod) {
+  final now = new DateTime.now();
+  final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+  final format = DateFormat.jm(); //"6:00 AM"
+  return format.format(dt);
 }
 
 class SelectionItem extends StatelessWidget {
@@ -169,7 +243,7 @@ class SelectionItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "10:00 AM",
+            text,
             style: kNormalTextStyle,
           ),
           if (icon != null)

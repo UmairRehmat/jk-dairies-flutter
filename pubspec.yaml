@@ -30,6 +30,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
   http: ^0.13.1
+  intl: ^0.17.0
+  date_range_picker: ^1.0.7
 
 
 dev_dependencies:
