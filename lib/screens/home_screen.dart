@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:jkdairies/providers/Products_provider.dart';
 import 'package:jkdairies/screens/productDetails.dart';
 import 'package:jkdairies/utils/constants.dart';
@@ -43,8 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                            ),
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12),
                             itemBuilder: (context, index) {
                               var item = productsProvider
                                   .products[productsProvider.selectedIndex]
@@ -53,10 +55,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               return InkWell(
                                 onTap: () {
                                   Navigator.push(
-                                      context,
-                                      TransitionEffect(
-                                          widget: ProductDetailScreen(),
-                                          alignment: Alignment.centerLeft));
+                                    context,
+                                    // MaterialPageRoute(
+                                    //     builder: (context) =>
+                                    //         ProductDetailScreen(item, index)),
+
+                                    TransitionEffect(
+                                        widget:
+                                            ProductDetailScreen(item, index),
+                                        alignment: Alignment.centerRight,
+                                        durationAnimation: 300),
+                                  );
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(top: 15, bottom: 10),
@@ -76,9 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: Image(
-                                          image: AssetImage(
-                                              'assets/temp_trans.png'),
+                                        child: Hero(
+                                          tag: "MainImage${index}",
+                                          child: Image(
+                                            image: AssetImage(
+                                                'assets/temp_trans.png'),
+                                          ),
                                         ),
                                       ),
                                       SizedBox(

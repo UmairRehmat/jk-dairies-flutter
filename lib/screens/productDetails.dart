@@ -1,15 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:jkdairies/models/CategoryModel.dart';
 import 'package:jkdairies/utils/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 
 class ProductDetailScreen extends StatefulWidget {
+  Products item;
+  int index;
+  ProductDetailScreen(this.item, this.index);
+
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  ScrollController _controller = ScrollController();
   int deliverySchedule = 0;
   String currentTime = '';
+  List<DateTime> rangeDate = [];
+  var currentDate = (new DateTime.now()).add(Duration(days: 1));
   @override
   void initState() {
     super.initState();
@@ -31,28 +43,69 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+          color: kBackgroundColor,
+          elevation: 0,
+          child: Container(
+            height: 70,
+            // margin: EdgeInsets.symmetric(horizontal: 10.0),
+            decoration: BoxDecoration(
+              color: Color(0xFFECEFFE),
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(20.0),
+                topRight: const Radius.circular(20.0),
+              ),
+            ),
+            child: Center(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Rs. 110x",
+                    style: kMediumBoldTextStyle,
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        textStyle: kNormalCardTextStyle,
+                        primary: kPrimaryColor,
+                        onPrimary: Colors.white),
+                    onPressed: () {},
+                    child: Text(
+                      "Add To Cart",
+                    ),
+                  )
+                ],
+              ),
+            )),
+          )),
       body: Column(
         children: [
           Container(
             height: MediaQuery.of(context).size.height * 0.25,
             color: kItemDetailTopColor,
             child: Center(
-              child: Image.asset(
-                'assets/temp_trans.png',
-                height: MediaQuery.of(context).size.height * 0.22,
-                fit: BoxFit.cover,
+              child: Hero(
+                tag: "MainImage${widget.index}",
+                child: Image(
+                  image: AssetImage('assets/temp_trans.png'),
+                ),
               ),
             ),
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(15),
+              padding:
+                  EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 10),
               decoration: BoxDecoration(
                   color: kBackgroundColor,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15))),
               child: ListView(
+                controller: _controller,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,7 +240,70 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                     ],
-                  )
+                  ),
+                  if (deliverySchedule > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              flex: 14,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Start Date",
+                                    style: kNormalBoldTextStyle.copyWith(
+                                        color: Colors.black),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      dataRangePickerDialog();
+                                    },
+                                    child: SelectionItem(
+                                      text: DateFormat("dd-MM-yyyy").format(
+                                          rangeDate.length > 0
+                                              ? rangeDate[0]
+                                              : currentDate),
+                                      icon: Icons.date_range,
+                                      isSelected:
+                                          rangeDate.length > 0 ? true : false,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                          Expanded(flex: 1, child: SizedBox()),
+                          if (rangeDate.length > 0)
+                            Expanded(
+                                flex: 14,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "End Date",
+                                      style: kNormalBoldTextStyle.copyWith(
+                                          color: Colors.black),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    SelectionItem(
+                                      text: DateFormat("dd-MM-yyyy").format(
+                                          rangeDate.length > 0
+                                              ? rangeDate[1]
+                                              : currentDate),
+                                      icon: Icons.date_range,
+                                      isSelected:
+                                          rangeDate.length > 0 ? true : false,
+                                    ),
+                                  ],
+                                )),
+                        ],
+                      ),
+                    )
                 ],
               ),
             ),
@@ -197,9 +313,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  void onScheduleSelection(int i) {
+  void onScheduleSelection(int i) async {
     setState(() {
       deliverySchedule = i;
+      rangeDate = [];
+    });
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _controller.animateTo(
+        _controller.position.maxScrollExtent,
+        duration: Duration(seconds: 1),
+        curve: Curves.fastOutSlowIn,
+      );
     });
   }
 
@@ -211,6 +335,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     print("time here");
     setState(() {
       currentTime = formatTimeOfDay(selectedTime);
+    });
+  }
+
+  void dataRangePickerDialog() async {
+    final List<DateTime> picked = await DateRangePicker.showDatePicker(
+        context: context,
+        initialFirstDate: currentDate,
+        initialLastDate: (currentDate)
+            .add(new Duration(days: deliverySchedule == 1 ? 7 : 30)),
+        firstDate: new DateTime(2020),
+        lastDate: new DateTime(DateTime.now().year + 2));
+    if (picked != null && picked.length == 2) {
+      print("these pickes");
+      picked.removeAt(1);
+      picked.add(
+          (picked[0]).add(new Duration(days: deliverySchedule == 1 ? 7 : 30)));
+      print(picked);
+    }
+    if (picked != null && picked.length == 1) {
+      print("single selected");
+      picked.add(
+          (picked[0]).add(new Duration(days: deliverySchedule == 1 ? 7 : 30)));
+      print(picked);
+    }
+    setState(() {
+      rangeDate = picked;
     });
   }
 }
@@ -248,7 +398,7 @@ class SelectionItem extends StatelessWidget {
           ),
           if (icon != null)
             SizedBox(
-              width: 20,
+              width: 15,
             ),
           if (icon != null)
             Icon(
