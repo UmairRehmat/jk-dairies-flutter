@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:jkdairies/providers/Products_provider.dart';
+import 'package:jkdairies/providers/cart_provider.dart';
 import 'package:jkdairies/screens/splash.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ProductsProvider())],
-      child: MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => ProductsProvider()),
+    ChangeNotifierProvider(create: (_) => CartProvider())
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

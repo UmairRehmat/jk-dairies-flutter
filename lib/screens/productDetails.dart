@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:jkdairies/models/CategoryModel.dart';
+import 'package:jkdairies/models/cart_item.dart';
+import 'package:jkdairies/providers/cart_provider.dart';
 import 'package:jkdairies/utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  Products item;
-  int index;
+  final Products item;
+  final int index;
   ProductDetailScreen(this.item, this.index);
 
   @override
@@ -20,15 +23,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   ScrollController _controller = ScrollController();
   int deliverySchedule = 0;
   String currentTime = '';
+  int quantity = 1;
+  int price;
   List<DateTime> rangeDate = [];
   var currentDate = (new DateTime.now()).add(Duration(days: 1));
   @override
   void initState() {
+    price = double.parse(widget.item.price).round();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+
     return Scaffold(
       backgroundColor: kItemDetailTopColor,
       appBar: AppBar(
@@ -64,7 +72,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Rs. 110x",
+                    "Rs. ${price * quantity}",
                     style: kMediumBoldTextStyle,
                   ),
                   ElevatedButton(
@@ -72,7 +80,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         textStyle: kNormalCardTextStyle,
                         primary: kPrimaryColor,
                         onPrimary: Colors.white),
-                    onPressed: () {},
+                    onPressed: () {
+                      onAddCartClicked(cartProvider);
+                    },
                     child: Text(
                       "Add To Cart",
                     ),
@@ -90,7 +100,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Hero(
                 tag: "MainImage${widget.index}",
                 child: Image(
-                  image: AssetImage('assets/temp_trans.png'),
+                  image: NetworkImage(widget.item.picture),
                 ),
               ),
             ),
@@ -115,11 +125,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: Column(
                           children: [
                             Text(
-                              "Jk Milk",
-                              style: kMediumBoldTextStyle,
+                              widget.item.name,
+                              style:
+                                  kMediumBoldTextStyle.copyWith(fontSize: 24),
                             ),
                             Text(
-                              "Rs. 110x",
+                              "Rs. $price",
                               style: kMediumTextStyle,
                             ),
                           ],
@@ -135,7 +146,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Icons.exposure_minus_1,
                                 color: Colors.black,
                               ),
-                              onPressed: null),
+                              onPressed: _decreaseQuantity),
                           Container(
                             height: 30,
                             width: 30,
@@ -152,7 +163,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     new BorderRadius.all(Radius.circular(5.0))),
                             child: Center(
                               child: Text(
-                                "1",
+                                quantity.toString(),
                                 style: kCardNameTextStyle,
                               ),
                             ),
@@ -163,7 +174,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Icons.plus_one,
                                 color: Colors.black,
                               ),
-                              onPressed: null)
+                              onPressed: _increaseQuantity)
                         ],
                       )
                     ],
@@ -172,7 +183,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     height: 20,
                   ),
                   Text(
-                    "Lorem ipsum dolor sit amet, consetetur sipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata",
+                    widget.item.details,
                     style: kDescriptionText,
                   ),
                   divider(),
@@ -313,6 +324,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  void showIncompleteInformation(BuildContext context, String text) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Incomplete Information'),
+        content: Text(text),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Dismiss',
+                style: kNormalTextStylePrimaryColor,
+              ))
+        ],
+      ),
+    );
+  }
+
   void onScheduleSelection(int i) async {
     setState(() {
       deliverySchedule = i;
@@ -321,7 +350,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _controller.animateTo(
         _controller.position.maxScrollExtent,
-        duration: Duration(seconds: 1),
+        duration: Duration(milliseconds: 500),
         curve: Curves.fastOutSlowIn,
       );
     });
@@ -362,6 +391,111 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     setState(() {
       rangeDate = picked;
     });
+  }
+
+  void _increaseQuantity() {
+    setState(() {
+      quantity++;
+    });
+  }
+
+  void _decreaseQuantity() {
+    if (quantity == 1) return;
+    setState(() {
+      quantity--;
+    });
+  }
+
+  void onAddCartClicked(CartProvider cartProvider) {
+    if (currentTime.length == 0) {
+      showIncompleteInformation(context, "Please select delivery time Thanks");
+      return;
+    }
+    if (deliverySchedule > 0 && rangeDate.length == 0) {
+      showIncompleteInformation(context,
+          "Please select Start delivery date For your selected schedule");
+      return;
+    }
+    int currentIndexInCart = cartProvider.existedItemIndex(widget.item.id);
+    CartItem cartItem = CartItem(
+        productId: widget.item.id,
+        price: price,
+        deliveryTime: currentTime,
+        quantity: quantity,
+        type: deliverySchedule,
+        item: widget.item,
+        startDate: DateFormat("dd-MM-yyyy")
+            .format(deliverySchedule == 0 ? currentDate : rangeDate[0]),
+        endDate: deliverySchedule == 0
+            ? ""
+            : DateFormat("dd-MM-yyyy").format(rangeDate[1]));
+    if (currentIndexInCart != -1) {
+      onItemExist(context, cartItem, cartProvider, currentIndexInCart);
+      return;
+    }
+    cartProvider.cartItems.add(cartItem);
+    Navigator.pop(context);
+  }
+}
+
+void onItemExist(BuildContext context, CartItem cartItem,
+    CartProvider cartProvider, int currentIndexInCart) {
+  {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+            title: Text(
+              "Item Exists",
+            ),
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                            "Item is already in the cart.do you want to update or add new one?")),
+                  ),
+                  Row(
+                    children: [
+                      MaterialButton(
+                        onPressed: () {
+                          cartProvider.cartItems.add(cartItem);
+                          print(
+                              "current length is:${cartProvider.cartItems.length}");
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Add New",
+                          style: kNormalTextStylePrimaryColor,
+                        ),
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          cartProvider.cartItems.removeAt(currentIndexInCart);
+                          cartProvider.cartItems.add(cartItem);
+                          print(
+                              "current length is:${cartProvider.cartItems.length}");
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Update",
+                          style: kNormalTextStylePrimaryColor,
+                        ),
+                      ),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.end,
+                  )
+                ],
+              )
+            ],
+          );
+        });
   }
 }
 

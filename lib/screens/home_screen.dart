@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     TransitionEffect(
                                         widget:
                                             ProductDetailScreen(item, index),
-                                        alignment: Alignment.centerRight,
+                                        alignment: Alignment.bottomCenter,
                                         durationAnimation: 300),
                                   );
                                 },
@@ -88,8 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Hero(
                                           tag: "MainImage${index}",
                                           child: Image(
-                                            image: AssetImage(
-                                                'assets/temp_trans.png'),
+                                            image: NetworkImage(item.picture),
+                                            // AssetImage(
+                                            //     'assets/temp_trans.png'),
                                           ),
                                         ),
                                       ),

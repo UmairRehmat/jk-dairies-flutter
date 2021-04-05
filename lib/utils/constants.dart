@@ -10,6 +10,8 @@ const kMediumTextStyle = TextStyle(fontSize: 18.0, color: Colors.black);
 const kMediumBoldTextStyle =
     TextStyle(fontSize: 22.0, color: Colors.black, fontWeight: FontWeight.w700);
 const kNormalTextStyle = TextStyle(fontSize: 16.0, color: Colors.black);
+const kNormalTextStylePrimaryColor =
+    TextStyle(fontSize: 14.0, color: kPrimaryColor);
 const kAppBarTextStyle = TextStyle(fontSize: 22.0, color: Colors.black);
 const kNormalBoldTextStyle = TextStyle(
     fontSize: 16.0, color: kPrimaryColor, fontWeight: FontWeight.bold);

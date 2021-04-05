@@ -70,6 +70,7 @@ class Products {
   String categoryId;
   String createdAt;
   String updatedAt;
+  String details;
 
   Products(
       {this.id,
@@ -80,6 +81,7 @@ class Products {
       this.unit,
       this.categoryId,
       this.createdAt,
+      this.details,
       this.updatedAt});
 
   Products.fromJson(Map<String, dynamic> json) {
@@ -92,6 +94,7 @@ class Products {
     categoryId = json['category_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    details = json['details'];
   }
 
   Map<String, dynamic> toJson() {
@@ -105,6 +108,7 @@ class Products {
     data['category_id'] = this.categoryId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['details'] = this.details;
     return data;
   }
 }
