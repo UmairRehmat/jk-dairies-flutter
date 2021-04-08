@@ -6,3 +6,4 @@ const BASE_URL = "https://$INSTANCE/public/api/v1/";
 //APIs endpoints
 const productEndPoint = "products";
 const categoryEndPoint = "categories";
+const districtEndPoint = "districts";

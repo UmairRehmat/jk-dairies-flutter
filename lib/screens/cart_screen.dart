@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jkdairies/models/cart_item.dart';
 import 'package:jkdairies/providers/cart_provider.dart';
+import 'package:jkdairies/screens/checkout_screen.dart';
 import 'package:jkdairies/utils/constants.dart';
+import 'package:jkdairies/utils/transition_animation.dart';
 import 'package:provider/provider.dart';
 
 class MyCart extends StatefulWidget {
@@ -15,6 +17,7 @@ class _MyCartState extends State<MyCart> {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
+    totalPrice = 0;
     cartProvider.cartItems.forEach((element) {
       totalPrice = totalPrice + (element.price * element.quantity);
     });
@@ -40,7 +43,15 @@ class _MyCartState extends State<MyCart> {
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          TransitionEffect(
+                            widget: CheckOutScreen(totalPrice),
+                            alignment: Alignment.center,
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                           textStyle: kNormalCardTextStyle,
                           primary: kPrimaryColor,

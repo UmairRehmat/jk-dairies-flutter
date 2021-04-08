@@ -20,6 +20,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'JK Dairies',
       theme: ThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            labelStyle: TextStyle(color: Colors.black),
+            suffixStyle: TextStyle(color: Colors.black)),
         fontFamily: 'Nunito',
         textTheme: TextTheme(
           button: TextStyle(fontSize: 20.0, color: Colors.black),
