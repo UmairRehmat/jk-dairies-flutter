@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jkdairies/models/districts_response.dart';
+import 'package:jkdairies/providers/cart_provider.dart';
+import 'package:jkdairies/providers/checkout_provider.dart';
 import 'package:jkdairies/providers/district_provider.dart';
+import 'package:jkdairies/screens/order_complete.dart';
 import 'package:jkdairies/utils/app_widgets.dart';
 import 'package:jkdairies/utils/constants.dart';
 import 'package:jkdairies/utils/transition_animation.dart';
+import 'package:provider/provider.dart';
 
 class CheckOutScreen extends StatefulWidget {
   int totalPrice;
@@ -33,6 +39,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.light,
@@ -85,6 +92,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     child: ListView(
                       // crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        SizedBox(
+                          height: 10,
+                        ),
                         TextInput(
                           controller: _userNameController,
                           error: _userNameInvalid,
@@ -93,8 +103,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               _userNameInvalid = null;
                             });
                           },
-                          label: "User Name",
-                          hint: "Username",
+                          label: "Name",
+                          hint: "Name",
                           icon: Icons.person,
                         ),
                         SizedBox(
@@ -144,6 +154,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 15),
                                         onChanged: (DistrictItem Value) {
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
                                           setState(() {
                                             print("district here");
                                             currentDistrict = Value;
@@ -182,6 +194,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                           style: TextStyle(
                                               color: Colors.grey, fontSize: 15),
                                           onChanged: (Cities Value) {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
                                             setState(() {
                                               print("district here");
                                               currentCities = Value;
@@ -230,13 +244,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              TransitionEffect(
-                                widget: CheckOutScreen(19),
-                                alignment: Alignment.center,
-                              ),
-                            );
+                            _orderNowClicked(cartProvider);
                           },
                           style: ElevatedButton.styleFrom(
                               textStyle: kNormalCardTextStyle,
@@ -260,5 +268,101 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       loading = false;
       districts = districtsList;
     });
+  }
+
+  void _orderNowClicked(CartProvider cartProvider) {
+    FocusScope.of(context).requestFocus(FocusNode());
+    if (_userNameController.text.trim().isEmpty) {
+      setState(() {
+        _userNameInvalid = "Enter Name";
+      });
+      return;
+    }
+    if (_userNameController.text.trim().length < 4) {
+      setState(() {
+        _userNameInvalid = "Enter valid UserName";
+      });
+
+      return;
+    }
+    if (_phoneNumberController.text.trim().isEmpty) {
+      setState(() {
+        _phoneNumberInvalid = "Enter phone number";
+      });
+      return;
+    }
+    if (_phoneNumberController.text.trim().length != 11 ||
+        !_phoneNumberController.text.startsWith("03")) {
+      setState(() {
+        _phoneNumberInvalid = "Enter valid Number 03XXXXXXXXX";
+      });
+      return;
+    }
+    if (_addressController.text.trim().isEmpty) {
+      setState(() {
+        _addressInvalid = "Enter Address";
+      });
+      return;
+    }
+    if (currentCities == null || currentDistrict == null) {
+      showIncompleteInformation(
+          context, "Please Select district and city properly, thanks.");
+      return;
+    }
+    _placeOrder(cartProvider);
+  }
+
+  void showIncompleteInformation(BuildContext context, String text,
+      {String titleString = 'Incomplete Information'}) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(titleString),
+        content: Text(text),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Dismiss',
+                style: kNormalTextStylePrimaryColor,
+              ))
+        ],
+      ),
+    );
+  }
+
+  void _placeOrder(CartProvider cartProvider) async {
+    setState(() {
+      loading = true;
+    });
+    var apiData = {
+      "total_price": widget.totalPrice,
+      "name": _userNameController.text.trim(),
+      "phone": _phoneNumberController.text.trim(),
+      "address": _addressController.text.trim(),
+      "district_id": currentDistrict.id,
+      "city_id": currentCities.id,
+      "orderitems":
+          json.encode(cartProvider.cartItems.map((e) => e.toJson()).toList()),
+    };
+    print("place order api data");
+    print(apiData);
+    bool orderPlaced = await CheckoutProvider().placeOrder(apiData);
+    if (orderPlaced) {
+      cartProvider.cartItems = [];
+      Navigator.pushReplacement(
+        context,
+        TransitionEffect(
+          widget: OrderCompleted(),
+          alignment: Alignment.center,
+        ),
+      );
+    } else {
+      setState(() {
+        loading = false;
+        showIncompleteInformation(context, "Something Went Wrong",
+            titleString: "Error");
+      });
+    }
   }
 }

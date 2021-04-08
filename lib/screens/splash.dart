@@ -69,7 +69,8 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                       child: Center(
                           child: Text(
                         "JK Dairies",
-                        style: kMediumTextStyle.copyWith(letterSpacing: 2.0),
+                        style: kMediumBoldTextStyle.copyWith(
+                            letterSpacing: 2.0, color: kPrimaryColor),
                       )),
                     ),
                   ],

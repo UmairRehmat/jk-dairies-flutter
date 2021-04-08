@@ -50,7 +50,9 @@ class _MyCartState extends State<MyCart> {
                             widget: CheckOutScreen(totalPrice),
                             alignment: Alignment.center,
                           ),
-                        );
+                        ).then((value) {
+                          setState(() {});
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                           textStyle: kNormalCardTextStyle,
