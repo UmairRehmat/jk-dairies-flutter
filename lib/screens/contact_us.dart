@@ -89,16 +89,16 @@ class _ContactUsState extends State<ContactUs> {
   }
 
   void _onCallClick() async {
-    launch("tel:03007860278");
+    launch("tel:03116555655");
   }
 
   void _onWhatsappClick() async {
-    await launch("https://wa.me/923126039558?text=Hello");
+    await launch("https://wa.me/923116555655?text=Hello");
   }
 
   void _onFaceBookClik() async {
     await launch(
-        "fb://facewebmodal/f?href=https://www.facebook.com/CheeziousPattoki",
+        "fb://facewebmodal/f?href=https://www.facebook.com/JKDairiespk",
         universalLinksOnly: true);
   }
 }
