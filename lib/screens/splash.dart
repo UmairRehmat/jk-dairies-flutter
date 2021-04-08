@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jkdairies/models/CategoryModel.dart';
+import 'package:jkdairies/models/bannerResponse.dart';
 import 'package:jkdairies/providers/Products_provider.dart';
 import 'package:jkdairies/screens/bottom_navigation.dart';
 import 'package:jkdairies/utils/constants.dart';
@@ -106,6 +107,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     //   SharedPrefProvider.clearKey(userToken);
     //   // return;
     // }
+    loadBanners(provider);
     Future.delayed(const Duration(milliseconds: 2000), () async {
       CategoryModel categoryModel = await provider.getProducts();
       if (categoryModel.success)
@@ -117,5 +119,9 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                 durationAnimation: 650),
             (route) => false);
     });
+  }
+
+  void loadBanners(ProductsProvider provider) async {
+    BannerResponse bannerResponse = await provider.getBanners();
   }
 }

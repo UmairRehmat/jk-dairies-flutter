@@ -1,6 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:jkdairies/models/bannerResponse.dart';
 import 'package:jkdairies/providers/Products_provider.dart';
 import 'package:jkdairies/screens/productDetails.dart';
 import 'package:jkdairies/utils/constants.dart';
@@ -24,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.only(top: 10.0, right: 12.0, left: 12.0),
         child: Column(
           children: [
-            Expanded(flex: 2, child: topBanner()),
+            Expanded(flex: 2, child: topBanner(productsProvider.banners)),
             Expanded(
                 flex: 8,
                 child: Column(
@@ -56,10 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    // MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //         ProductDetailScreen(item, index)),
-
                                     TransitionEffect(
                                         widget:
                                             ProductDetailScreen(item, index),
@@ -89,6 +89,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                           tag: "MainImage${index}",
                                           child: Image(
                                             image: NetworkImage(item.picture),
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent
+                                                        loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes
+                                                      : null,
+                                                ),
+                                              );
+                                            },
                                             // AssetImage(
                                             //     'assets/temp_trans.png'),
                                           ),
@@ -131,8 +152,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget topBanner() {
-    return Image.asset('assets/banner.png');
+  Widget topBanner(List<Banners> banners) {
+    return ImageSlideshow(
+      width: double.infinity,
+      initialPage: 0,
+      indicatorColor: kPrimaryColor,
+      indicatorBackgroundColor: Colors.grey,
+      children: _imagesList(banners),
+      onPageChanged: (value) {
+        print('Page changed: $value');
+      },
+      autoPlayInterval: 5000,
+    );
     // return Container(
     //     decoration: BoxDecoration(
     //   gradient: LinearGradient(
@@ -194,5 +225,29 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemPressed(ProductsProvider productsProvider, int index) {
     productsProvider.selectedIndex = index;
     setState(() {});
+  }
+
+  List<Widget> _imagesList(List<Banners> banners) {
+    List<Widget> bannerList = [];
+    banners.forEach((element) {
+      bannerList.add(
+        Image.network(
+          element.image,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes
+                    : null,
+              ),
+            );
+          },
+        ),
+      );
+    });
+    return bannerList;
   }
 }

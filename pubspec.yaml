@@ -33,6 +33,7 @@ dependencies:
   intl: ^0.17.0
   date_range_picker: ^1.0.7
   url_launcher: ^6.0.3
+  flutter_image_slideshow: ^0.0.3
 
 
 dev_dependencies:

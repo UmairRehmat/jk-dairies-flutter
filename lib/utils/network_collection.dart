@@ -8,3 +8,4 @@ const productEndPoint = "products";
 const categoryEndPoint = "categories";
 const districtEndPoint = "districts";
 const orderPlaceEndPoint = "order/placed";
+const bannersEndPoint = "banners";
