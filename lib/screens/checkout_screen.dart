@@ -80,7 +80,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         height: 10,
                       ),
                       Text(
-                        "Loading available areas...",
+                        currentDistrict != null
+                            ? "Placing Order..."
+                            : "Loading available areas...",
                         style: kNormalTextStyle,
                       ),
                     ],
