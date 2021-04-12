@@ -137,6 +137,7 @@ class _MyCartState extends State<MyCart> {
                       children: [
                         Text(
                           currentItem.item.name,
+                          overflow: TextOverflow.ellipsis,
                           style: kMediumBoldTextStyle.copyWith(
                               color: Colors.black),
                         ),

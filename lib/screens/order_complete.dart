@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jkdairies/utils/constants.dart';
+import 'package:jkdairies/utils/transition_animation.dart';
+
+import 'bottom_navigation.dart';
 
 class OrderCompleted extends StatefulWidget {
   @override
@@ -58,6 +61,10 @@ class _OrderCompletedState extends State<OrderCompleted> {
   }
 
   void _onOkClicked() {
-    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(
+        context,
+        TransitionEffect(
+            widget: BottomNavigation(), alignment: Alignment.center),
+        (route) => false);
   }
 }

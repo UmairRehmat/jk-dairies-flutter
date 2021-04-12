@@ -153,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget topBanner(List<Banners> banners) {
+    // return Container();
     return ImageSlideshow(
       width: double.infinity,
       initialPage: 0,

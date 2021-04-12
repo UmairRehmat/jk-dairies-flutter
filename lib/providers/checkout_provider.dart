@@ -8,12 +8,12 @@ class CheckoutProvider {
     try {
       Uri url = Uri.parse("$BASE_URL$orderPlaceEndPoint");
       print("URL log$url");
-      var response = await http.post(url, body: jsonEncode(apiData));
+      var response = await http.post(url, body: apiData);
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       return response.statusCode == 200 ? true : false;
     } catch (error) {
-      print(error);
+      print('errorherecheck$error');
       return false;
     }
   }

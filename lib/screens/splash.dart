@@ -83,30 +83,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   }
 
   void moveToNextScreen(ProductsProvider provider) async {
-    // String token = await SharedPrefProvider.getString(userToken);
-    // if (token != null) {
-    //   UserResponse userResponse = await UserRepository.loginUser(token);
-    //   if (userResponse.success) {
-    //     if (userResponse.user != null) {
-    //       appUser = userResponse.user;
-    //       SharedPrefProvider.setString(userToken, userResponse.token);
-    //       Future.delayed(const Duration(milliseconds: 3000), () {
-    //         Navigator.pushAndRemoveUntil(
-    //             context,
-    //             TransitionEffect(
-    //                 widget: BottomNavigation(),
-    //                 alignment: Alignment.centerLeft,
-    //                 durationAnimation: 650),
-    //             (route) => false);
-    //       });
-    //       // CommonUtils.showSimpleDialog(
-    //       //     context, "Login success", "${userResponse.message}", "Ok");
-    //     }
-    //     return;
-    //   }
-    //   SharedPrefProvider.clearKey(userToken);
-    //   // return;
-    // }
     loadBanners(provider);
     Future.delayed(const Duration(milliseconds: 2000), () async {
       CategoryModel categoryModel = await provider.getProducts();

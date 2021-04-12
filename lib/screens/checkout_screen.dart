@@ -338,12 +338,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       loading = true;
     });
     var apiData = {
-      "total_price": widget.totalPrice,
+      "total_price": widget.totalPrice.toString(),
       "name": _userNameController.text.trim(),
       "phone": _phoneNumberController.text.trim(),
       "address": _addressController.text.trim(),
-      "district_id": currentDistrict.id,
-      "city_id": currentCities.id,
+      "district_id": currentDistrict.id.toString(),
+      "city_id": currentCities.id.toString(),
       "orderitems":
           json.encode(cartProvider.cartItems.map((e) => e.toJson()).toList()),
     };
