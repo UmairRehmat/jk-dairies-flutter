@@ -22,7 +22,7 @@ class ProductsProvider extends ChangeNotifier {
       products = categoryModel.data;
       return categoryModel;
     } catch (error) {
-      return CategoryModel.withError();
+      return CategoryModel.withError(error);
     }
   }
 

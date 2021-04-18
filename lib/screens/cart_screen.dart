@@ -139,7 +139,7 @@ class _MyCartState extends State<MyCart> {
                           currentItem.item.name,
                           overflow: TextOverflow.ellipsis,
                           style: kMediumBoldTextStyle.copyWith(
-                              color: Colors.black),
+                              fontSize: 20, color: Colors.black),
                         ),
                         SizedBox(
                           height: 1,

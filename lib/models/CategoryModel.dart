@@ -1,5 +1,6 @@
 class CategoryModel {
   List<Data> data;
+  var message;
   bool success;
   CategoryModel({this.data});
 
@@ -13,8 +14,9 @@ class CategoryModel {
     }
   }
 
-  CategoryModel.withError() {
+  CategoryModel.withError(error) {
     success = false;
+    message = error;
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

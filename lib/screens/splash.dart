@@ -58,8 +58,8 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                           textAnimation.value * height, 0.0, 0.0),
                       child: Center(
                         child: Image(
-                          height: 220,
-                          width: 220,
+                          height: 200,
+                          width: 200,
                           image: AssetImage('assets/logo_main.png'),
                         ),
                       ),
@@ -71,7 +71,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                           child: Text(
                         "JK Dairies",
                         style: kMediumBoldTextStyle.copyWith(
-                            letterSpacing: 2.0, color: kPrimaryColor),
+                            letterSpacing: 1.5, fontSize: 28),
                       )),
                     ),
                   ],
@@ -94,10 +94,31 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                 alignment: Alignment.centerLeft,
                 durationAnimation: 650),
             (route) => false);
+      else
+        somethingWentWrong(
+            context, "Something Wend Wrong ${categoryModel.message}");
     });
   }
 
   void loadBanners(ProductsProvider provider) async {
     BannerResponse bannerResponse = await provider.getBanners();
+  }
+
+  void somethingWentWrong(BuildContext context, String text) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Sorry'),
+        content: Text(text),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Dismiss',
+                style: kNormalTextStylePrimaryColor,
+              ))
+        ],
+      ),
+    );
   }
 }
