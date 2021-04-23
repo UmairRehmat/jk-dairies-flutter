@@ -143,13 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             TextSpan(
                                               text: 'Rs. $itemPrice',
                                             ),
-                                            TextSpan(
-                                              text: '/${item.unit}',
-                                              style:
-                                                  kNormalCardTextStyle.copyWith(
-                                                      fontSize: 8,
-                                                      color: kPrimaryColor),
-                                            ),
+                                            // TextSpan(
+                                            //   text: '/${item.unit}',
+                                            //   style:
+                                            //       kNormalCardTextStyle.copyWith(
+                                            //           fontSize: 8,
+                                            //           color: kPrimaryColor),
+                                            // ),
                                           ],
                                         ),
                                       ),
