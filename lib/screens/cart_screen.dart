@@ -183,7 +183,11 @@ class _MyCartState extends State<MyCart> {
                         children: [
                           InkWell(
                             onTap: () {
-                              if (currentItem.quantity == 1) return;
+                              if (currentItem.quantity == 1) {
+                                _removeFromCart(cartProvider, index);
+
+                                return;
+                              }
                               _decreaseQuantity(cartProvider, index);
                             },
                             child: Padding(
@@ -247,6 +251,12 @@ class _MyCartState extends State<MyCart> {
     totalPrice = 0;
     setState(() {
       provider.cartItems[index].quantity--;
+    });
+  }
+
+  void _removeFromCart(CartProvider cartProvider, int index) {
+    setState(() {
+      cartProvider.cartItems.removeAt(index);
     });
   }
 }
