@@ -28,5 +28,5 @@ const kDescriptionText =
 const Color kSecondaryColor = Colors.indigo;
 const Color kPrimaryColor = Color(0xFF2D51DB);
 const Color kBackgroundColor = Color(0XFFF5F5F7);
-const Color kTempBackgroundColor = Color(0XFFbebcbf);
+const Color kTempBackgroundColor = Color(0xff10b4e7);
 const Color kItemDetailTopColor = Color(0XFFECEFFE);

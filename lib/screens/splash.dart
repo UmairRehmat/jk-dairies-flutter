@@ -47,33 +47,17 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
         animation: animationController,
         builder: (BuildContext context, Widget child) {
           return Scaffold(
-            backgroundColor: kBackgroundColor,
+            backgroundColor: kTempBackgroundColor,
             body: Stack(
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Transform(
-                      transform: Matrix4.translationValues(
-                          textAnimation.value * height, 0.0, 0.0),
-                      child: Center(
-                        child: Image(
-                          height: 200,
-                          width: 200,
-                          image: AssetImage('assets/logo_main.png'),
-                        ),
+                    Center(
+                      child: Image(
+                        image: AssetImage('assets/logo_gif.gif'),
                       ),
-                    ),
-                    Transform(
-                      transform: Matrix4.translationValues(
-                          animation.value * height, 0.0, 0.0),
-                      child: Center(
-                          child: Text(
-                        "JK Dairies",
-                        style: kMediumBoldTextStyle.copyWith(
-                            letterSpacing: 1.5, fontSize: 28),
-                      )),
-                    ),
+                    )
                   ],
                 )
               ],

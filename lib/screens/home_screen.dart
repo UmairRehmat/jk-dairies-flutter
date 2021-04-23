@@ -48,9 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 12,
-                                    mainAxisSpacing: 12),
+                              crossAxisCount: 2,
+                            ),
                             itemBuilder: (context, index) {
                               var item = productsProvider
                                   .products[productsProvider.selectedIndex]
@@ -69,15 +68,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(top: 15, bottom: 10),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 6),
                                   decoration: new BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Color(0xFF2D51DB),
-                                          Color(0xFF1A3083),
-                                        ],
-                                      ),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 2,
+                                          offset: Offset(1,
+                                              1), // changes position of shadow
+                                        ),
+                                      ],
+                                      // gradient: LinearGradient(
+                                      //   begin: Alignment.topCenter,
+                                      //   end: Alignment.bottomCenter,
+                                      //   colors: [
+                                      //     Color(0xFF2D51DB),
+                                      //     Color(0xFF1A3083),
+                                      //   ],
+                                      // ),
                                       borderRadius: new BorderRadius.all(
                                           Radius.circular(20.0))),
                                   child: Center(
@@ -120,20 +131,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Text(
                                         item.name,
-                                        style: kCardNameTextStyle,
+                                        style: kCardNameTextStyle.copyWith(
+                                            color: kPrimaryColor),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       RichText(
                                         text: TextSpan(
-                                          style: kNormalCardTextStyle,
+                                          style: kNormalCardTextStyle.copyWith(
+                                              color: kPrimaryColor),
                                           children: [
                                             TextSpan(
                                               text: 'Rs. $itemPrice',
                                             ),
                                             TextSpan(
-                                                text: '/${item.unit}',
-                                                style: kNormalCardTextStyle
-                                                    .copyWith(fontSize: 8))
+                                              text: '/${item.unit}',
+                                              style:
+                                                  kNormalCardTextStyle.copyWith(
+                                                      fontSize: 8,
+                                                      color: kPrimaryColor),
+                                            ),
                                           ],
                                         ),
                                       ),
