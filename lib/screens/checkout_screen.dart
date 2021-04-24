@@ -28,8 +28,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   final _addressController = TextEditingController();
   String _addressInvalid;
   bool loading = true;
-  List<DistrictItem> districts;
-  DistrictItem currentDistrict;
+  List<Cities> cities;
+  // DistrictItem currentDistrict;
   Cities currentCities;
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         height: 10,
                       ),
                       Text(
-                        currentDistrict != null
+                        currentCities != null
                             ? "Placing Order..."
                             : "Loading available areas...",
                         style: kNormalTextStyle,
@@ -150,22 +150,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 alignment: Alignment.centerLeft,
                                 child: SelectionItem(
                                     text: DropdownButtonHideUnderline(
-                                      child: DropdownButton<DistrictItem>(
-                                        hint: Text("Select District"),
-                                        value: currentDistrict,
+                                      child: DropdownButton<Cities>(
+                                        hint: Text("Select City"),
+                                        value: currentCities,
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 15),
-                                        onChanged: (DistrictItem Value) {
+                                        onChanged: (Cities Value) {
                                           FocusScope.of(context)
                                               .requestFocus(FocusNode());
                                           setState(() {
                                             print("district here");
-                                            currentDistrict = Value;
+                                            currentCities = Value;
                                           });
                                         },
-                                        items:
-                                            districts.map((DistrictItem user) {
-                                          return DropdownMenuItem<DistrictItem>(
+                                        items: cities.map((Cities user) {
+                                          return DropdownMenuItem<Cities>(
                                             value: user,
                                             child: Row(
                                               children: <Widget>[
@@ -180,49 +179,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         }).toList(),
                                       ),
                                     ),
-                                    isSelected: currentDistrict != null),
+                                    isSelected: currentCities != null),
                               ),
-                            ),
-                            SizedBox(width: 20),
-                            if (currentDistrict != null)
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: SelectionItem(
-                                      text: DropdownButtonHideUnderline(
-                                        child: DropdownButton<Cities>(
-                                          hint: Text("Select City"),
-                                          value: currentCities,
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 15),
-                                          onChanged: (Cities Value) {
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            setState(() {
-                                              print("district here");
-                                              currentCities = Value;
-                                            });
-                                          },
-                                          items: currentDistrict.cities
-                                              .map((Cities user) {
-                                            return DropdownMenuItem<Cities>(
-                                              value: user,
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Text(
-                                                    user.name,
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ),
-                                      ),
-                                      isSelected: currentCities != null),
-                                ),
-                              )
+                            )
                           ],
                         ),
                         divider(
@@ -265,10 +224,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void getDistrictsData() async {
-    List<DistrictItem> districtsList = await DistrictProvider().getDistricts();
+    List<Cities> citiesList = await DistrictProvider().getDistricts();
     setState(() {
       loading = false;
-      districts = districtsList;
+      cities = citiesList;
     });
   }
 
@@ -306,9 +265,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       });
       return;
     }
-    if (currentCities == null || currentDistrict == null) {
+    if (currentCities == null) {
       showIncompleteInformation(
-          context, "Please Select district and city properly, thanks.");
+          context, "Please Select city properly, thanks.");
       return;
     }
     _placeOrder(cartProvider);
@@ -342,7 +301,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       "name": _userNameController.text.trim(),
       "phone": _phoneNumberController.text.trim(),
       "address": _addressController.text.trim(),
-      "district_id": currentDistrict.id.toString(),
       "city_id": currentCities.id.toString(),
       "orderitems":
           json.encode(cartProvider.cartItems.map((e) => e.toJson()).toList()),

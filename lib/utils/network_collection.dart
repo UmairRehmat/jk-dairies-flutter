@@ -7,5 +7,6 @@ const BASE_URL = "https://$INSTANCE/public/api/v1/";
 const productEndPoint = "products";
 const categoryEndPoint = "categories";
 const districtEndPoint = "districts";
+const citiesEndPoint = "cities";
 const orderPlaceEndPoint = "order/placed";
 const bannersEndPoint = "banners";
